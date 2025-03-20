@@ -137,7 +137,7 @@ export const TableRow = ({
       return;
     }
 
-    console.log(row._source);
+    // console.log(row._source);
 
     try {
       // 복호화 API 호출
@@ -156,7 +156,7 @@ export const TableRow = ({
 
       const result = await response.json();
       */
-    
+
       // 대신 임시 목업 데이터 생성
       // row._source 가 unknown 타입으로 인식되고 있어서, Type Assertion을 통해 타입을 명시적으로 지정
       const source = row._source as Record<string, any>;
@@ -164,36 +164,35 @@ export const TableRow = ({
       const mockDecryptedData: Record<string, any> = { ...source };
 
       // 원본 데이터의 각 필드를 순회하면서 필드 값이 문자열인 경우에 '복호화됨' 접두사를 추가할 것임
-      Object.keys(source).forEach(key => {
+      Object.keys(source).forEach((key) => {
         // 필드 값이 문자열인 경우에만 처리
         if (typeof source[key] === 'string') {
           // 필드 값 앞에 '복호화됨: '을 추가
           mockDecryptedData[key] = '복호화됨: ' + source[key];
         }
-      })
-      
-      console.log('원본 row:', row);
-      console.log('목업 데이터:', mockDecryptedData);
+      });
+
+      // console.log('원본 row:', row);
+      // console.log('목업 데이터:', mockDecryptedData);
 
       // 복호화된 데이터로 상태 업데이트
       // 원본 데이터의 구조를 유지하면서 _source만 복호화된 데이터로 변경
-      const updatedValue = ({
+      const updatedValue = {
         ...row,
         // _id에 '_decrypted' 접미사를 추가하여 doc_viewer_tab의 shouldComponentUpdate에서 강제 업데이트 하도록 설정
         _id: row._id + '_decrypted',
         // _source: result
-        _source: mockDecryptedData
-      });
+        _source: mockDecryptedData,
+      };
 
-      console.log('최종 업데이트될 데이터', updatedValue);
+      // console.log('최종 업데이트될 데이터', updatedValue);
       setDecryptedValue(updatedValue);
 
       // 테스트용 목업 데이터 성공 메시지 표시
       alert('테스트용 목업 데이터가 성공적으로 복호화되었습니다.');
-
     } catch (error) {
-      alert("복호화 요청 중 오류가 발생했습니다.");
-      console.error(error);
+      alert('복호화 요청 중 오류가 발생했습니다.' + error);
+      // console.error(error);
     }
   }
 
@@ -215,8 +214,8 @@ export const TableRow = ({
             </h4>
           </EuiFlexItem>
 
-          {/* ✅ 복호화 버튼 추가 */}
-          <EuiButton onClick={decryptRow} size="s" iconType="lockOpen">복호화</EuiButton>
+          {/* 복호화 버튼 추가 */}
+          <EuiButton onClick={decryptRow} size="s" iconType="lockOpen">decrypt</EuiButton>
 
           {/* 복호화 상태 표시 */}
           {decryptedValue && (
