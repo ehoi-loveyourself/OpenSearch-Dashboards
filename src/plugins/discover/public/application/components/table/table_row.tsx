@@ -72,7 +72,6 @@ export function DocViewTableRow({
   valueRaw,
 }: Props) {
   const valueClassName = classNames({
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     osdDocViewer__value: true,
     'truncate-by-height': isCollapsible && isCollapsed,
   });
@@ -113,14 +112,7 @@ export function DocViewTableRow({
         )}
         {displayUnderscoreWarning && <DocViewTableRowIconUnderscore />}
         {displayNoMappingWarning && <DocViewTableRowIconNoMapping />}
-        <div
-          className={valueClassName}
-          data-test-subj={`tableDocViewRow-${field}-value`}
-          /*
-           * Justification for dangerouslySetInnerHTML:
-           * We just use values encoded by our field formatters
-           */
-          // eslint-disable-next-line react/no-danger
+        <div className={valueClassName} data-test-subj={`tableDocViewRow-${field}-value`}
           dangerouslySetInnerHTML={{ __html: value as string }}
         />
       </td>
