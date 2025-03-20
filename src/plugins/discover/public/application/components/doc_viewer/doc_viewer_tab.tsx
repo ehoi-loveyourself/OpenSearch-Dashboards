@@ -63,6 +63,20 @@ export class DocViewerTab extends React.Component<Props, State> {
   }
 
   shouldComponentUpdate(nextProps: Props, nextState: State) {
+    // console.log('DocViewerTab shouldComponentUpdate:', {
+    //   currentHitId: this.props.renderProps.hit._id,
+    //   nextHitId: nextProps.renderProps.hit._id,
+    //   currentId: this.props.id,
+    //   nextId: nextProps.id,
+    //   hasError: nextState.hasError,
+    //   currentSource: this.props.renderProps.hit._source,
+    //   nextSource: nextProps.renderProps.hit._source,
+    //   shouldUpdate: nextProps.renderProps.hit._id !== this.props.renderProps.hit._id || 
+    //                nextProps.id !== this.props.id ||
+    //                nextState.hasError
+    // });
+
+    // 여기서 false가 나와서 update가 안되는 것 같음
     return (
       nextProps.renderProps.hit._id !== this.props.renderProps.hit._id ||
       nextProps.id !== this.props.id ||
