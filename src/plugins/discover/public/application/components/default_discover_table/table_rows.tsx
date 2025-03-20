@@ -10,7 +10,7 @@
  */
 
 import React, { useState } from 'react';
-import { EuiButtonIcon, EuiFlexGroup, EuiFlexItem, EuiIcon } from '@elastic/eui';
+import { EuiButtonIcon, EuiFlexGroup, EuiFlexItem, EuiIcon, EuiButton } from '@elastic/eui';
 import dompurify from 'dompurify';
 import { TableCell } from './table_cell';
 import { DocViewerLinks } from '../doc_viewer_links/doc_viewer_links';
@@ -42,6 +42,8 @@ export const TableRow = ({
 }: TableRowProps) => {
   const flattened = indexPattern.flattenHit(row);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [decryptedValue, setDecryptedValue] = useState<OpenSearchSearchHit | null>(null);
+
   const tableRow = (
     <tr key={row._id}>
       <td data-test-subj="docTableExpandToggleColumn" className="osdDocTableCell__toggleDetails">
@@ -128,6 +130,73 @@ export const TableRow = ({
     </tr>
   );
 
+  // 복호화 함수
+  async function decryptRow() {
+    if (!row._source) {
+      alert('복호화할 데이터가 없습니다.');
+      return;
+    }
+
+    console.log(row._source);
+
+    try {
+      // 복호화 API 호출
+      /*
+      const response = await fetch('https://consumer-api', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(row._source)
+      })
+
+      if (!response.ok) {
+        throw new Error("서버 요청 실패" + response.status);
+      }
+
+      const result = await response.json();
+      */
+    
+      // 대신 임시 목업 데이터 생성
+      // row._source 가 unknown 타입으로 인식되고 있어서, Type Assertion을 통해 타입을 명시적으로 지정
+      const source = row._source as Record<string, any>;
+      // 이제 목업 데이터를 생성할 때 타입 오류 없이 접근 가능
+      const mockDecryptedData: Record<string, any> = { ...source };
+
+      // 원본 데이터의 각 필드를 순회하면서 필드 값이 문자열인 경우에 '복호화됨' 접두사를 추가할 것임
+      Object.keys(source).forEach(key => {
+        // 필드 값이 문자열인 경우에만 처리
+        if (typeof source[key] === 'string') {
+          // 필드 값 앞에 '복호화됨: '을 추가
+          mockDecryptedData[key] = '복호화됨: ' + source[key];
+        }
+      })
+      
+      console.log('원본 row:', row);
+      console.log('목업 데이터:', mockDecryptedData);
+
+      // 복호화된 데이터로 상태 업데이트
+      // 원본 데이터의 구조를 유지하면서 _source만 복호화된 데이터로 변경
+      const updatedValue = ({
+        ...row,
+        // _id에 '_decrypted' 접미사를 추가하여 doc_viewer_tab의 shouldComponentUpdate에서 강제 업데이트 하도록 설정
+        _id: row._id + '_decrypted',
+        // _source: result
+        _source: mockDecryptedData
+      });
+
+      console.log('최종 업데이트될 데이터', updatedValue);
+      setDecryptedValue(updatedValue);
+
+      // 테스트용 목업 데이터 성공 메시지 표시
+      alert('테스트용 목업 데이터가 성공적으로 복호화되었습니다.');
+
+    } catch (error) {
+      alert("복호화 요청 중 오류가 발생했습니다.");
+      console.error(error);
+    }
+  }
+
   const expandedTableRow = (
     <tr key={'x' + row._id}>
       <td className="osdDocTable__detailsParent" colSpan={columns.length + 1}>
@@ -145,6 +214,17 @@ export const TableRow = ({
               Expanded document
             </h4>
           </EuiFlexItem>
+
+          {/* ✅ 복호화 버튼 추가 */}
+          <EuiButton onClick={decryptRow} size="s" iconType="lockOpen">복호화</EuiButton>
+
+          {/* 복호화 상태 표시 */}
+          {decryptedValue && (
+            <EuiFlexItem grow={false}>
+              <div style={{ color: 'green' }}>복호화됨!</div>
+            </EuiFlexItem>
+          )}
+
           <EuiFlexItem>
             <DocViewerLinks hit={row} indexPattern={indexPattern} columns={columns} />
           </EuiFlexItem>
@@ -152,7 +232,7 @@ export const TableRow = ({
         <EuiFlexGroup gutterSize="m">
           <EuiFlexItem>
             <DocViewer
-              hit={row}
+              hit={decryptedValue || row} // 여기서 복호화된 데이터 또는 원본 데이터 전달
               columns={columns}
               indexPattern={indexPattern}
               onRemoveColumn={(columnName: string) => {
