@@ -298,11 +298,14 @@
 # Set the value of this setting to true to enable plugin augmentation
 # vis_augmenter.pluginAugmentationEnabled: true
 
-server.host: '0.0.0.0'
-opensearch.hosts: [https://localhost:9200]
+# server.port: 5601
+# server.host: localhost
+
+opensearch.hosts: [http://localhost:9200]
 opensearch.ssl.verificationMode: none
-opensearch.username: admin
-opensearch.password: 'Gksk123!@#'
+
+# opensearch.username: "admin"
+# opensearch.password: "Gksk123!@#"
 # opensearch.requestHeadersWhitelist: [authorization, securitytenant]
 
 # opensearch_security.multitenancy.enabled: true
@@ -310,4 +313,3 @@ opensearch.password: 'Gksk123!@#'
 # opensearch_security.readonly_mode.roles: [kibana_read_only]
 # Use this setting if you are running opensearch-dashboards without https
 # opensearch_security.cookie.secure: false
-
