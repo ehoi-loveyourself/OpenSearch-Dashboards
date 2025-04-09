@@ -137,26 +137,23 @@ export const TableRow = ({
       return;
     }
 
-    // console.log(row._source);
-
     try {
       // 복호화 API 호출
-      /*
-      const response = await fetch('https://consumer-api', {
+      const response = await fetch('http://localhost:8080/opensearch/decrypt', {
         method: 'POST',
         headers: {
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(row._source)
-      })
+        body: JSON.stringify(row._source),
+      });
 
       if (!response.ok) {
-        throw new Error("서버 요청 실패" + response.status);
+        throw new Error('서버 요청 실패' + response.status);
       }
 
       const result = await response.json();
-      */
 
+      /*
       // 대신 임시 목업 데이터 생성
       // row._source 가 unknown 타입으로 인식되고 있어서, Type Assertion을 통해 타입을 명시적으로 지정
       const source = row._source as Record<string, any>;
@@ -174,6 +171,7 @@ export const TableRow = ({
 
       // console.log('원본 row:', row);
       // console.log('목업 데이터:', mockDecryptedData);
+      */
 
       // 복호화된 데이터로 상태 업데이트
       // 원본 데이터의 구조를 유지하면서 _source만 복호화된 데이터로 변경
@@ -181,8 +179,8 @@ export const TableRow = ({
         ...row,
         // _id에 '_decrypted' 접미사를 추가하여 doc_viewer_tab의 shouldComponentUpdate에서 강제 업데이트 하도록 설정
         _id: row._id + '_decrypted',
-        // _source: result
-        _source: mockDecryptedData,
+        _source: result,
+        // _source: mockDecryptedData,
       };
 
       // console.log('최종 업데이트될 데이터', updatedValue);
@@ -215,7 +213,7 @@ export const TableRow = ({
           </EuiFlexItem>
 
           {/* 복호화 버튼 추가 */}
-          <EuiButton onClick={decryptRow} size="s" iconType="lockOpen">decrypt</EuiButton>
+          <EuiButton onClick={decryptRow} size="s" iconType="lockOpen">복호화</EuiButton> /* eslint-disable-line */
 
           {/* 복호화 상태 표시 */}
           {decryptedValue && (
